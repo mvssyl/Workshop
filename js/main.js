@@ -36,16 +36,26 @@ loadData(dataList["aquaculture-production"])
 
 gsap.registerPlugin(ScrollTrigger);
 
-const section = gsap.utils.toArray(".acte");
+const bande = document.querySelector(".bande-histoire");
 
-gsap.to(section, {
-    xPercent: -100 * (section.length - 1),
+function scrollMouvement() {
+    let bandeWidth = bande.scrollWidth;
+    return - (bandeWidth - window.innerWidth);
+}
+
+const entre = gsap.to(bande, {
+    x: scrollMouvement,
     ease: "none",
-    scrollTrigger: {
-        trigger : ".fenetre-theatre",
-        pin: true,
-        scrub: 1,
-        snap: 1 / section.length - 1,
-        end: () => "+=" + document.querySelector(".fenetre-theatre").offsetWidth * 2 // La durée du scroll (plus le chiffre est grand, plus c'est lent)
-    }
-})
+    duration: 3,
+});
+
+ScrollTrigger.create({
+    trigger: ".fenetre-theatre",
+    start: "top top",
+    end: () => "+=" + (scrollMouvement() * -1),
+    pin: true,
+    animation: entre,
+    scrub: 1,
+    invalidateOnRefresh: true,
+    snap: 1 / (9-1)
+});
