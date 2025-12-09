@@ -7,12 +7,14 @@ body {
     width: 100%;
     height: 100vh;
     overflow: hidden;
+    perspective: 1200px;
 }
 
 .bande-histoire {
     display: flex;
     width: 900vw;
     height: 100%;
+    transform-style: preserve-3d;
 }
 
 .acte {
@@ -27,6 +29,14 @@ body {
     width: 100vw;
     height: 100vh;
     flex-shrink: 0;
+
+    border: 10px solid #333;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+
+    transform-origin: center center;
+    will-change: transform;
 }
 
 .acte-1 section {background-color: aliceblue; border-right: 2px solid black;}

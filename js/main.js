@@ -43,10 +43,57 @@ function scrollMouvement() {
     return - (bandeWidth - window.innerWidth);
 }
 
-const entre = gsap.to(bande, {
+const tween = gsap.to(bande, {
     x: scrollMouvement,
     ease: "none",
     duration: 3,
+});
+
+const sections = gsap.utils.toArray("[class*='part-']");
+
+sections.forEach((section, i) => {
+    gsap.fromTo(section,
+        {
+            rotateY: -45,
+            scale: 0.8,
+            opacity: 0.5,
+        },
+        {
+            rotateY: 45,
+            scale: 0.8,
+            opacity: 0.5,
+            ease: "none",
+        
+
+            ScrollTrigger: {
+                trigger: section,
+                containerAnimation: tween,
+                start: "left right",
+                end: "right left",
+                scrub: true,
+            }
+        }
+    
+    );
+
+    gsap.fromTo(section,
+        { scale: 0.8, opacity: 0.5},
+        {
+            scale: 1,
+            opacity: 1,
+            rotateY: 0,
+            ease: "power1.inOut",
+            repeat: 1,
+            yoyo: true,
+            scrollTrigger: {
+                trigger: section,
+                containerAnimation: tween,
+                start: "left right",
+                end: "right left",
+                scrub: true,
+            }
+        }
+    );
 });
 
 ScrollTrigger.create({
@@ -54,7 +101,7 @@ ScrollTrigger.create({
     start: "top top",
     end: () => "+=" + (scrollMouvement() * -1),
     pin: true,
-    animation: entre,
+    animation: tween,
     scrub: 1,
     invalidateOnRefresh: true,
     snap: 1 / (9-1)
