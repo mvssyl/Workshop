@@ -1,108 +1,70 @@
-"use strict";
-
-const dataList = {
-    "aquaculture-production": "data/aquaculture-production.json",
-    "average-surfece-temperature": "data/average-surfece-temperature.json",
-    "capture-fishery-production": "data/capture-fishery-production.json",
-    "children-per-woman": "data/children-per-woman.json",
-    "daily-calories-supply": "data/daily-calories-supply.json",
-    "homocide-rate": "data/homocide-rate.json",
-    "hours-per-worker": "data/hours-per-worker.json",
-    "international-trips-for-personal-reasons": "data/international-trips-for-personal-reasons.json",
-    "konbini-count": "data/konbini-count.json",
-    "life-expectancy-at-birth": "data/life-expectancy-at-birth.json",
-    "manga-physical-sales": "data/manga-physical-sales.json",
-    "objects-launched-into-outer-space": "data/objects-launched-into-outer-space.json",
-    "population-by-age-group": "data/population-by-age-group.json",
-    "population": "data/population.json",
-    "share-new-cars-electric": "data/share-new-cars-electric.json",
-    "share-of-land-area-used-for-agriculture": "data/share-of-land-area-used-for-agriculture.json",
-    "data/shinkansen-delay": "data/shinkansen-delay.json",
-    "solar-energy-capacity": "data/solar-energy-capacity.json",
-    "tsunami-count": "data/tsunami-count.json",
-    "whale-killed": "data/whale-killed.json"
-}
-
-const loadData = async (url) => {
-    const response = await fetch(url);
-    const values = await response.json();
-    return values;
-};
-
-loadData(dataList["aquaculture-production"])
-    .then((values) => {
-        console.log(values);
-    });
-
 gsap.registerPlugin(ScrollTrigger);
 
-const bande = document.querySelector(".bande-histoire");
+const carousel = document.querySelector(".carousel");
+const cells = document.querySelectorAll(".carousel__cell");
+const numCells = cells.length; 
+const angleStep = 360 / numCells; // 40 degrés
 
-function scrollMouvement() {
-    let bandeWidth = bande.scrollWidth;
-    return - (bandeWidth - window.innerWidth);
-}
-
-const tween = gsap.to(bande, {
-    x: scrollMouvement,
-    ease: "none",
-    duration: 3,
+// --- 1. SETUP GÉOMÉTRIQUE (Ton code "Ventilateur") ---
+// Pas de Radius complexe, pas de Math.tan. Juste l'angle.
+cells.forEach((cell, i) => {
+    gsap.set(cell, {
+        rotateY: i * angleStep,
+        // Z reste à 0 ! C'est ça qui garde tout collé au centre.
+    });
 });
 
-const sections = gsap.utils.toArray("[class*='part-']");
+// --- 2. CENTRAGE (L'Offset) ---
+// Actuellement, la scène 1 va de 0° à 40° (elle est à droite).
+// Pour l'avoir face à nous, on recule le carrousel de la moitié de l'angle (-20°).
+const startOffset = -70;
+gsap.set(carousel, { rotateY: startOffset });
 
-sections.forEach((section, i) => {
-    gsap.fromTo(section,
-        {
-            rotateY: -45,
-            scale: 0.8,
-            opacity: 0.5,
-        },
-        {
-            rotateY: 45,
-            scale: 0.8,
-            opacity: 0.5,
-            ease: "none",
-        
 
-            ScrollTrigger: {
-                trigger: section,
-                containerAnimation: tween,
-                start: "left right",
-                end: "right left",
-                scrub: true,
-            }
-        }
+// --- 3. ANIMATION SÉQUENTIELLE (Stop & Go) ---
+// Au lieu d'un "gsap.to" simple, on fait une Timeline.
+
+const tl = gsap.timeline({
+    scrollTrigger: {
+        trigger: ".fenetre-theatre",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1, // Fluidité
+        pin: ".scene-container" // On bloque l'écran
+    }
+});
+
+cells.forEach((cell, i) => {
     
-    );
-
-    gsap.fromTo(section,
-        { scale: 0.8, opacity: 0.5},
-        {
-            scale: 1,
+    // A. APPARITION DES ÉLÉMENTS (Le "Stop")
+    //const content = cell.querySelectorAll(".hide-at-start");
+    
+    /*if(content.length > 0) {
+        tl.to(content, {
             opacity: 1,
-            rotateY: 0,
-            ease: "power1.inOut",
-            repeat: 1,
-            yoyo: true,
-            scrollTrigger: {
-                trigger: section,
-                containerAnimation: tween,
-                start: "left right",
-                end: "right left",
-                scrub: true,
-            }
-        }
-    );
-});
+            y: 0,
+            duration: 1, // Temps passé à regarder la scène
+            stagger: 0.1
+        });
+        
+        // Petite pause statique
+        tl.to({}, { duration: 0.5 });
+    }*/
 
-ScrollTrigger.create({
-    trigger: ".fenetre-theatre",
-    start: "top top",
-    end: () => "+=" + (scrollMouvement() * -1),
-    pin: true,
-    animation: tween,
-    scrub: 1,
-    invalidateOnRefresh: true,
-    snap: 1 / (9-1)
+    // B. ROTATION VERS LA SUIVANTE (Le "Go")
+    if (i < numCells - 1) {
+        
+        // Optionnel : Faire disparaitre les éléments avant de tourner
+        // tl.to(content, { opacity: 0, duration: 0.5 });
+
+        // Calcul de l'angle cible :
+        // Angle actuel (startOffset) - (Numéro de la prochaine scène * 40°)
+        const nextAngle = startOffset - ((i + 1) * angleStep);
+
+        tl.to(carousel, {
+            rotateY: nextAngle,
+            duration: 2, // Le voyage est plus long que l'anim interne
+            ease: "power2.inOut" // Mouvement fluide
+        });
+    }
 });

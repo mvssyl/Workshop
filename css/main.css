@@ -1,44 +1,76 @@
-body {
-    margin: 0;
-    overflow-x: hidden;
-}
+body { margin: 0; overflow-x: hidden; background: #000; }
 
 .fenetre-theatre {
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-    perspective: 1200px;
+    height: 800vh; /* Hauteur pour la timeline */
+    position: relative;
 }
 
-.bande-histoire {
-    display: flex;
-    width: 900vw;
-    height: 100%;
+.scene-container {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    perspective: 8000px; /* Profondeur */
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    pointer-events: none; 
+}
+
+.carousel {
+    position: relative;
+    width: 100%; height: 100%;
     transform-style: preserve-3d;
 }
 
-.acte {
-    display: flex;
-    width: 300vw;
-    height: 100vh;
+.carousel__cell {
+    position: absolute;
+    /* PIVOT : Au centre de l'écran */
+    top: 50%; left: 50%;
+    
+    /* TAILLE : Assez grand pour remplir l'écran */
+    width: 100vw; 
+    height: 80vh;
+    
+    /* CENTRAGE VERTICAL SEULEMENT */
+    margin-top: -40vh; 
+    
+    /* LE SECRET DU VENTILATEUR : 
+       On ne touche pas à margin-left (on reste à 0px du centre).
+       Le pivot est sur le bord GAUCHE. */
+    transform-origin: left center; 
+    
+    /* VISUEL */
+    border: 2px solid white;
+    background: rgba(20, 20, 20, 0.5);
+    display: flex; justify-content: center; align-items: center;
 }
 
-.part-1, .part-2, .part-3, 
-.part-4, .part-5, .part-6, 
-.part-7, .part-8, .part-9 {
-    width: 100vw;
-    height: 100vh;
-    flex-shrink: 0;
+/* Éléments à animer (cachés au début) */
+/*
+.content-wrapper { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+*/
+/*
+.hide-at-start { opacity: 1; transform: translateY(30px); }
+*/
 
-    border: 10px solid #333;
-    box-sizing: border-box;
-    background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 50px rgba(0,0,0,0.5);
 
-    transform-origin: center center;
-    will-change: transform;
+.carousel__cell, .carousel__cell *{
+    
+  transform-style: preserve-3d;
 }
 
-.acte-1 section {background-color: aliceblue; border-right: 2px solid black;}
-.acte-2 section {background-color: rebeccapurple; border-right: 2px solid white;}
-.acte-3 section {background-color: aquamarine; border-right:  2px solid black;}
+/* .prop { 
+ 
+    width: 100px; 
+    height: 100px; 
+    background: red; 
+    rotate: 0 1 0 90deg;
+      transform-style: preserve-3d;
+} */
+
+
+.prop{
+    width: 100px;
+    height: 100px;
+
+    background: gold;
+    rotate: 0 1 0 90deg;
+}
